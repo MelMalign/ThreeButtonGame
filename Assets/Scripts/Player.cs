@@ -1,45 +1,70 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private CharacterController controller;
-    private Vector3 playerVelocity;
-    private bool groundedPlayer;
-    private float playerSpeed = 6.0f;
-    private float jumpHeight = 1.0f;
-    private float gravityValue = -9.8f;
+    public float playerSpeed = 6.0f;
+    public float jumpHeight = 1.0f;
+
+    public bool hasKey = false;
+
+    private Rigidbody rb;
+    SphereCollider collider;
+    float distToGround;
 
     // Start is called before the first frame update
     void Start()
     {
-        controller = gameObject.AddComponent<CharacterController>();
+        //Get Rigidbody
+        rb = gameObject.GetComponent<Rigidbody>();
+        collider = gameObject.GetComponent<SphereCollider>();
+        distToGround = collider.bounds.extents.y;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        groundedPlayer = controller.isGrounded;
-        if (groundedPlayer && playerVelocity.y < 0)
-        {
-            playerVelocity.y = 0f;
-        }
 
+        //Move
         Vector3 move = new Vector3(Input.GetAxisRaw("Horizontal"), 0, 0);
-        controller.Move(move * Time.deltaTime * playerSpeed);
+        rb.position += (move * Time.deltaTime * playerSpeed);
 
-        if (move != Vector3.zero)
+        //Jump
+        if (Input.GetButtonDown("Jump") && IsGrounded())
         {
-            gameObject.transform.forward = move;
+            rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
         }
 
-        if (Input.GetButtonDown("Jump") && groundedPlayer)
+    }
+
+
+   private bool IsGrounded()
+   {
+        return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
+   }
+
+
+private void OnTriggerEnter(Collider collision)
+    {
+        if(collision.gameObject.tag == "Key")
         {
-            playerVelocity.y += Mathf.Sqrt(jumpHeight * -4.0f * gravityValue);
+            Key key = collision.gameObject.GetComponent<Key>();
+            hasKey = true;
+            Debug.Log("Picked up Key");
         }
 
-        playerVelocity.y += gravityValue * Time.deltaTime;
-        controller.Move(playerVelocity * Time.deltaTime);
+
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Door" && hasKey)
+        {
+            //WinCondition
+            Debug.Log("You win!");
+        }
     }
 }
