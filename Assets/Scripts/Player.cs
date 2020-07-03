@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class Player : MonoBehaviour
     SphereCollider collider;
     float distToGround;
 
+    [SerializeField]
+    private Text winText;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +26,6 @@ public class Player : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody>();
         collider = gameObject.GetComponent<SphereCollider>();
         distToGround = collider.bounds.extents.y;
-
     }
 
     // Update is called once per frame
@@ -64,7 +68,9 @@ private void OnTriggerEnter(Collider collision)
         if (collision.gameObject.tag == "Door" && hasKey)
         {
             //WinCondition
-            Debug.Log("You win!");
+            Debug.Log("You Win!");
+            winText.text = "You Win!";
+
         }
     }
 }
