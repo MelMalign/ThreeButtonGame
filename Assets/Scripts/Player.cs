@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
@@ -17,6 +18,8 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private Text winText;
+
+    public string nextSceneName;
 
 
     // Start is called before the first frame update
@@ -45,13 +48,13 @@ public class Player : MonoBehaviour
     }
 
 
-   private bool IsGrounded()
-   {
-        return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
-   }
+    private bool IsGrounded()
+    {
+         return Physics.Raycast(transform.position, -Vector3.up, distToGround + 0.1f);
+    }
 
 
-private void OnTriggerEnter(Collider collision)
+    private void OnTriggerEnter(Collider collision)
     {
         if(collision.gameObject.tag == "Key")
         {
@@ -69,8 +72,8 @@ private void OnTriggerEnter(Collider collision)
         {
             //WinCondition
             Debug.Log("You Win!");
-            winText.text = "You Win!";
-
+            winText.text = "YOU WIN!";
+            SceneManager.LoadScene(nextSceneName);
         }
     }
 }
